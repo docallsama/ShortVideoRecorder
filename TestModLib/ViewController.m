@@ -54,10 +54,17 @@
     
     self.recordControlView.frame = CGRectMake(0, PLS_SCREEN_HEIGHT - 60, PLS_SCREEN_WIDTH, 40);
     
-    UIButton *recordButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+    CGFloat quarterScreenWidth = PLS_SCREEN_WIDTH / 4;
+    UIButton *recordButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, quarterScreenWidth, 44)];
     [recordButton addTarget:self action:@selector(onClickRecordButton:) forControlEvents:UIControlEventTouchUpInside];
     [recordButton setTitle:@"录制" forState:UIControlStateNormal];
+    [recordButton setTitle:@"停止" forState:UIControlStateSelected];
     [self.recordControlView addSubview:recordButton];
+    
+    UIButton *deleteButton = [[UIButton alloc] initWithFrame:CGRectMake(quarterScreenWidth, 0, quarterScreenWidth, 44)];
+    [deleteButton addTarget:self action:@selector(onClickDeleteButton:) forControlEvents:UIControlEventTouchUpInside];
+    [deleteButton setTitle:@"删除" forState:UIControlStateNormal];
+    [self.recordControlView addSubview:deleteButton];
 }
 
 - (void)setupTopControlView {
@@ -67,10 +74,18 @@
 #pragma mark - target
 
 - (void)onClickRecordButton:(UIButton *)sender {
-    if (self.shortVideoRecorder) {
+    sender.selected = !sender.selected;
+    if (self.shortVideoRecorder.isRecording) {
         [self.shortVideoRecorder stopRecording];
     } else {
         [self.shortVideoRecorder startRecording];
+    }
+}
+
+//点击删除按钮删除最后一条视频
+- (void)onClickDeleteButton:(UIButton *)sender {
+    if ([self.shortVideoRecorder getFilesCount]) {
+        [self.shortVideoRecorder deleteLastFile];
     }
 }
 

@@ -61,8 +61,18 @@
 - (void)deleteLastFile;
 
 /**
+    删除所有录制的视频段
+ */
+- (void)deleteAllFiles;
+
+/**
     获取所有录制的视频段的地址
  */
 - (NSArray<NSURL *> *__nullable)getAllFilesURL;
+
+/**
+    获取所有录制的视频段的数量
+ */
+- (NSInteger)getFilesCount;
 
 @end

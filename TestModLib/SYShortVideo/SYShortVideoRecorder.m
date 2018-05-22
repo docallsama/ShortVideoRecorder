@@ -36,11 +36,11 @@
         _lastDuratioin = 60.0f;
         _localFilesArray = [[NSMutableArray alloc] init];
         
+//        [self deleteAllFiles];
         [self configCaptureSessionInput];
         [self configCaptureSessionAudioInput];
         [self configCaptureSessionOutput];
         [self configVideoPreviewView];
-        
     }
     return self;
 }
@@ -100,16 +100,14 @@
     self.movieOutput = [[AVCaptureMovieFileOutput alloc] init];
     CMTime maxDuration = CMTimeMake(_lastDuratioin, 1);
     self.movieOutput.maxRecordedDuration = maxDuration;
-    AVCaptureConnection *connection = [self.movieOutput connectionWithMediaType:AVMediaTypeVideo];
-//    connection.videoOrientation = AVCaptureVideoOrientationPortrait;
-//    if (connection.isActive) {
-//        NSLog(@"satate success");
-//    } else {
-//        NSLog(@"satate fail");
-//    }
     
     if ([self.captureSession canAddOutput:self.movieOutput]) {
         [self.captureSession addOutput:self.movieOutput];
+        
+        AVCaptureConnection *connection = [self.movieOutput connectionWithMediaType:AVMediaTypeVideo];
+        if ([connection isVideoStabilizationSupported]) {
+            connection.preferredVideoStabilizationMode = AVCaptureVideoStabilizationModeAuto;
+        }
     }
     else {
         // Handle the failure.
@@ -176,6 +174,10 @@
     return [self.localFilesArray copy];
 }
 
+- (NSInteger)getFilesCount {
+    return self.localFilesArray.count;
+}
+
 #pragma mark - file method
 
 //获取一个文件URL
@@ -196,15 +198,86 @@
     return [NSURL fileURLWithPath:path];
 }
 
-//删除文件
-- (void)deleteFileWithURL:(NSURL *)fileURL {
+//获取本地文件夹下全部视频文件以供清除
+- (NSArray *)getLocalAllFiles {
+    NSArray *doumenetPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentDir = [[doumenetPaths objectAtIndex:0] stringByAppendingPathComponent:@"com.SYShortVideo"];
+    NSString *videoDir = [documentDir stringByAppendingPathComponent:@"tmpVideo"];
     
+    NSError *error = nil;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray *filesArray = [fileManager contentsOfDirectoryAtPath:videoDir error:&error];
+    
+    NSMutableArray *resultArray = [[NSMutableArray alloc] init];
+    for (NSString *fileName in filesArray) {
+        NSURL *path = [NSURL fileURLWithPath:[videoDir stringByAppendingPathComponent:fileName]];
+        [resultArray addObject:path];
+    }
+    if (!error) {
+        return resultArray;
+    } else {
+        return @[];
+    }
+}
+
+//通过路径删除文件
+- (void)deleteFileWithURL:(NSURL *)fileURL {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL existed = [fileManager fileExistsAtPath:[fileURL path]];
+    NSError *error = nil;
+    if (existed) {
+        [fileManager removeItemAtURL:fileURL error:&error];
+    }
+}
+
+- (void)deleteAllFiles {
+    NSArray *filesArray = [self getLocalAllFiles];
+    for (NSURL *fileUrl in filesArray) {
+        [self deleteFileWithURL:fileUrl];
+    }
+}
+
+- (void)convertVideo:(NSURL *)fileURL {
+    // 通过文件的 url 获取到这个文件的资源
+    AVURLAsset *avAsset = [[AVURLAsset alloc] initWithURL:fileURL options:nil];
+    // 用 AVAssetExportSession 这个类来导出资源中的属性
+    NSArray *compatiblePresets = [AVAssetExportSession exportPresetsCompatibleWithAsset:avAsset];
+    
+    // 压缩视频
+    if ([compatiblePresets containsObject:AVAssetExportPresetLowQuality]) { // 导出属性是否包含低分辨率
+        // 通过资源（AVURLAsset）来定义 AVAssetExportSession，得到资源属性来重新打包资源 （AVURLAsset, 将某一些属性重新定义
+        AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:avAsset presetName:AVAssetExportPresetLowQuality];
+        // 设置导出文件的存放路径
+        NSString *outPutPath = [[fileURL absoluteString] stringByReplacingOccurrencesOfString:@".mov" withString:@".mp4"];
+        exportSession.outputURL = [NSURL URLWithString:outPutPath];
+        
+        // 是否对网络进行优化
+        exportSession.shouldOptimizeForNetworkUse = true;
+        
+        // 转换成MP4格式
+        exportSession.outputFileType = AVFileTypeMPEG4;
+        
+        // 开始导出,导出后执行完成的block
+        [exportSession exportAsynchronouslyWithCompletionHandler:^{
+            // 如果导出的状态为完成
+            if ([exportSession status] == AVAssetExportSessionStatusCompleted) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // 更新一下显示包的大小
+                    NSLog(@"convert finish");
+                });
+            } else {
+                NSLog(@"error -> %@",exportSession.error);
+            }
+        }];
+    }
 }
 
 #pragma mark - delegates
 
 - (void)captureOutput:(AVCaptureFileOutput *)output didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL fromConnections:(NSArray<AVCaptureConnection *> *)connections error:(nullable NSError *)error {
     NSLog(@"output complete in -> %@",outputFileURL);
+    
+    [self convertVideo:outputFileURL];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
