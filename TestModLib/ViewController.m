@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "SYShortVideoRecorder.h"
+#import "SYAlbumManager.h"
 
 #define PLS_BaseToolboxView_HEIGHT 64
 #define PLS_SCREEN_WIDTH CGRectGetWidth([UIScreen mainScreen].bounds)
@@ -15,8 +16,9 @@
 
 @interface ViewController ()
 
-@property (nonatomic, strong)SYShortVideoRecorder *shortVideoRecorder;
-@property (nonatomic, strong)UIView *recordControlView;
+@property (nonatomic, strong) SYShortVideoRecorder *shortVideoRecorder;
+@property (nonatomic, strong) UIView *topControlView;
+@property (nonatomic, strong) UIView *recordControlView;
 
 @end
 
@@ -68,7 +70,16 @@
 }
 
 - (void)setupTopControlView {
+    self.topControlView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.view addSubview:self.topControlView];
     
+    self.topControlView.frame = CGRectMake(0, 0, PLS_SCREEN_WIDTH, 40);
+    
+    CGFloat quarterScreenWidth = PLS_SCREEN_WIDTH / 4;
+    UIButton *albumButton = [[UIButton alloc] initWithFrame:CGRectMake(quarterScreenWidth, 0, quarterScreenWidth, 44)];
+    [albumButton addTarget:self action:@selector(onClickAlbumButton:) forControlEvents:UIControlEventTouchUpInside];
+    [albumButton setTitle:@"相册" forState:UIControlStateNormal];
+    [self.topControlView addSubview:albumButton];
 }
 
 #pragma mark - target
@@ -87,6 +98,14 @@
     if ([self.shortVideoRecorder getFilesCount]) {
         [self.shortVideoRecorder deleteLastFile];
     }
+}
+
+//点击相册按钮
+- (void)onClickAlbumButton:(UIButton *)sender {
+    BOOL auth = [[SYAlbumManager manager] authorizationStatusAuthorized];
+    
+    SYAlbumModel *albumModel = [[SYAlbumModel alloc] init];
+    [albumModel setResult:@"nil"];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -15,6 +15,8 @@
 		763CCEAD20B27705000AECBB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 763CCEAC20B27705000AECBB /* main.m */; };
 		763CCEB620B29B3E000AECBB /* SYShortVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 763CCEB520B29B3E000AECBB /* SYShortVideoManager.m */; };
 		763CCEBA20B29E8D000AECBB /* SYShortVideoRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 763CCEB920B29E8D000AECBB /* SYShortVideoRecorder.m */; };
+		763CCED820B51D9E000AECBB /* SYAlbumManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 763CCED720B51D9E000AECBB /* SYAlbumManager.m */; };
+		763CCEDD20B55788000AECBB /* SYAlbumModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 763CCEDC20B55788000AECBB /* SYAlbumModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +35,10 @@
 		763CCEB820B29E8D000AECBB /* SYShortVideoRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SYShortVideoRecorder.h; sourceTree = "<group>"; };
 		763CCEB920B29E8D000AECBB /* SYShortVideoRecorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SYShortVideoRecorder.m; sourceTree = "<group>"; };
 		763CCEBC20B2ACA4000AECBB /* SYCameraConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SYCameraConfig.h; sourceTree = "<group>"; };
+		763CCED620B51D9E000AECBB /* SYAlbumManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SYAlbumManager.h; sourceTree = "<group>"; };
+		763CCED720B51D9E000AECBB /* SYAlbumManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SYAlbumManager.m; sourceTree = "<group>"; };
+		763CCEDB20B55788000AECBB /* SYAlbumModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SYAlbumModel.h; sourceTree = "<group>"; };
+		763CCEDC20B55788000AECBB /* SYAlbumModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SYAlbumModel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +75,7 @@
 				763CCE9E20B27704000AECBB /* AppDelegate.m */,
 				763CCEA020B27704000AECBB /* ViewController.h */,
 				763CCEA120B27704000AECBB /* ViewController.m */,
+				763CCED520B51D5E000AECBB /* SYAlbumManager */,
 				763CCEB320B27B1E000AECBB /* SYShortVideo */,
 				763CCEA320B27704000AECBB /* Main.storyboard */,
 				763CCEA620B27705000AECBB /* Assets.xcassets */,
@@ -89,6 +96,17 @@
 				763CCEB920B29E8D000AECBB /* SYShortVideoRecorder.m */,
 			);
 			path = SYShortVideo;
+			sourceTree = "<group>";
+		};
+		763CCED520B51D5E000AECBB /* SYAlbumManager */ = {
+			isa = PBXGroup;
+			children = (
+				763CCED620B51D9E000AECBB /* SYAlbumManager.h */,
+				763CCED720B51D9E000AECBB /* SYAlbumManager.m */,
+				763CCEDB20B55788000AECBB /* SYAlbumModel.h */,
+				763CCEDC20B55788000AECBB /* SYAlbumModel.m */,
+			);
+			path = SYAlbumManager;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -163,7 +181,9 @@
 			files = (
 				763CCEA220B27704000AECBB /* ViewController.m in Sources */,
 				763CCEBA20B29E8D000AECBB /* SYShortVideoRecorder.m in Sources */,
+				763CCEDD20B55788000AECBB /* SYAlbumModel.m in Sources */,
 				763CCEAD20B27705000AECBB /* main.m in Sources */,
+				763CCED820B51D9E000AECBB /* SYAlbumManager.m in Sources */,
 				763CCEB620B29B3E000AECBB /* SYShortVideoManager.m in Sources */,
 				763CCE9F20B27704000AECBB /* AppDelegate.m in Sources */,
 			);
